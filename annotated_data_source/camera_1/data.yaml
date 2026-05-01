@@ -1,0 +1,14 @@
+path: C:/Users/cheng/Documents/GitHub/CAFEs_Raspberry_YOLO/agricultural-cobot-main_legacy/yolov11
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 1
+names: ['Riped berries']
+
+roboflow:
+  workspace: adesogus
+  project: yolov11n-camera-1-agroscope
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/adesogus/yolov11n-camera-1-agroscope/dataset/1

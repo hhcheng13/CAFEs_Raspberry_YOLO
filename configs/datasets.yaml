@@ -1,0 +1,17 @@
+﻿# Dataset mapping for each camera
+cameras:
+  camera_1:
+    dataset_root: annotated_data_source/camera_1
+    train_images: train/images
+    val_images: valid/images
+    predict_source: valid/images
+    class_names:
+      - Riped berries
+
+  camera_2:
+    dataset_root: annotated_data_source/camera_2
+    train_images: train/images
+    val_images: valid/images
+    predict_source: valid/images
+    class_names:
+      - Riped berries

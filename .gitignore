@@ -206,7 +206,18 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-data/*
-!data/.gitkeep
-models/*
-!models/.gitkeep
+# Project artifacts and local-only assets
+runs/
+training/runs/
+*.cache
+*.pt
+*.pth
+*.onnx
+*.engine
+*.tflite
+*.zip
+robot_config/gdrive_credentials.json
+training/yolov11n_config_camera_*.yaml
+agricultural-cobot-main_legacy/
+models/agricultural-cobot/
+models/agricultural-cobot.zip

@@ -1,6 +1,7 @@
 gdown
 ultralytics
 tqdm
+PyYAML
 
 # Robot automation and Google Drive upload dependencies
 google-api-python-client

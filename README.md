@@ -1,153 +1,72 @@
-# 🤖🍇 Vision-Guided Agricultural Tasks with Diffusion-Based Motion Learning Using a Human-Robot Collaborative System
+﻿# Training-Only YOLOv11n Pipeline
 
-## 📋 Pipeline Overview
+This repository provides a training-only pipeline for YOLOv11n on camera-based agricultural datasets.
 
-<p align="center">
-    <img src="./assets/images/traning_process.png" alt="Training Process" width="400"/>
-    <br>
-    <span align="center"><em>Pipeline for fine-tuning the pre-trained YOLOv11 nano model. Notice that only the grey box require human involved</em></span>
-</p>
+## Data Preparation (Roboflow)
 
+Before training, prepare your dataset in Roboflow:
 
-## 🚀 Getting Started
+1. Go to [Roboflow workspace](https://app.roboflow.com/hhs-workspace-f6gsb/home).
+2. Create your own account and set up your project.
+3. Upload your images.
+4. Run semi-auto annotation, then manually correct labels where needed. (...\CAFEs_Raspberry_YOLO\screen cap on using roboflow)
+5. Create a dataset version.
+6. Download/export the annotated dataset and place it under `annotated_data_source/`.
 
-Follow these steps to set up your environment:
+Note:
+- Originally this workflow used Grounding DINO for assisted annotation.
+- It appears the platform workflow has been updated to use SAM3-assisted annotation.
 
-#### 1. 📥 Clone the repository
+## Repository Scope
 
-```bash
-git clone https://github.com/alessiodesogus/agricultural-cobot.git
-cd agricultural-cobot
-```
+- Included: training, evaluation, inference
+- Excluded from canonical flow: annotation scripts/workflows
+- Legacy snapshot kept at `agricultural-cobot-main_legacy/` for reference only
 
-#### 2. 🐍 Create a conda environment
-
-```bash
-conda create -n agricobot python=3.10
-conda activate agricobot
-```
-
-#### 3. 📦 Install the required dependencies
+## Setup
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**Dependencies included:**
-- `ultralytics` - YOLOv11 implementation
-- `tqdm` - Progress bars for training visualization
-- `gdown` - Google Drive downloads for datasets
+## Dataset/Model Source
 
-#### 4. 📁 Download datasets and models
+- Datasets are expected under `annotated_data_source/`
+- Pretrained weights are expected under `pre_trained_model/`
 
-```bash
-cd scripts/
-sh yolo_datasets_download.sh
-sh yolo_models_download.sh
-cd ..
-```
+## Dataset Location
 
-### 🗂️ Data Folder Organization
+Current dataset roots in config:
 
-Your `data/` folder should be organized as follows for proper training:
+- `annotated_data_source/camera_1`
+- `annotated_data_source/camera_2`
 
-```
-data/
-├── camera_1/                          # 📷 Camera 1 dataset
-│   ├── data.yaml                      # 📄 Dataset configuration
-│   ├── README.dataset.txt             # 📖 Dataset documentation
-│   ├── README.roboflow.txt            # 🤖 Roboflow export info
-│   ├── train/                         # 🏋️ Training data
-│   │   ├── images/                    # 🖼️ Training images
-│   │   │   ├── IMG_001.jpg
-│   │   │   ├── IMG_002.jpg
-│   │   │   └── ...
-│   │   ├── labels/                    # 🏷️ YOLO format labels
-│   │   │   ├── IMG_001.txt
-│   │   │   ├── IMG_002.txt
-│   │   │   └── ...
-│   ├── valid/                         # ✅ Validation data
-│   │   ├── images/                    # 🖼️ Validation images
-│   │   └── labels/                    # 🏷️ Validation labels
-│   └── test/                          # 🧪 Test data
-│       ├── images/                    # 🖼️ Test images
-│       └── labels/                    # 🏷️ Test labels
-└── camera_2/                          # 📷 Camera 2 dataset
-    ├── data.yaml                      # 📄 Dataset configuration
-    ├── README.dataset.txt             # 📖 Dataset documentation
-    ├── README.roboflow.txt            # 🤖 Roboflow export info
-    ├── train/                         # 🏋️ Training data
-    │   ├── images/
-    │   └──labels/
-    ├── valid/                         # ✅ Validation data
-    │   ├── images/
-    │   └── labels/
-    └── test/                          # 🧪 Test data
-        ├── images/
-        └── labels/
-```
+## Model/Output Structure
 
-- **Images**: JPG format, various resolutions supported
-- **Labels**: YOLO format (.txt files) with normalized coordinates
-- **Classes**: Currently configured for `Riped berries` (class 0)
-- **Split**: Organized into train/valid/test folders for proper evaluation
+- Pretrained input models: `pre_trained_model/`
+- Trained output models: `output_model/`
 
+## Config-Driven Modes
 
-### 🚂 Training with Python Script
+In `configs/train.yaml`:
 
-The Python script provides a streamlined command-line interface for training:
+- `training_mode: finetune` uses `finetune_model` (`.pt` file)
+- `training_mode: scratch` uses `scratch_model` (for example `yolo11n.yaml`)
+
+## Run (Using `train.yaml`)
 
 ```bash
-cd training/
-
-# Basic training for camera 1
-python yolov11n_finetuning.py --cam_id 1
-
-# Custom parameters for camera 2
-python yolov11n_finetuning.py --cam_id 2 --epochs 10 --batch_size 16 --image_size 640
+python training/yolov11n_finetuning.py --config configs/train.yaml
 ```
 
-| Parameter | Description | Default | Example |
-|-----------|-------------|---------|---------|
-| `--cam_id` | Camera ID (1 or 2) | Required | `--cam_id 1` |
-| `--epochs` | Number of training epochs | 5 | `--epochs 25` |
-| `--batch_size` | Training batch size | 8 | `--batch_size 16` |
-| `--image_size` | Input image size | 1280 | `--image_size 640` |
-
-### 📊 Training with Jupyter Notebook
-
-For interactive development and visualization, follow the Jupyter Notebook stored at:
+## Backward-Compatible Legacy-Style Command
 
 ```bash
-training/yolov11n_finetuning.ipynb
+python training/yolov11n_finetuning.py --cam_id 1 --epochs 5 --batch_size 8 --image_size 1280
 ```
 
+## Outputs
 
-## 🎯 Results
+Outputs are written under:
 
-After training, you'll find results in:
-
-```
-runs/detect/camera_{cam_id}/
-├── yolov11n_train/                   # 🏋️ Training results
-│   ├── weights/
-│   │   ├── best.pt                   # 🏆 Best model weights
-│   │   └── last.pt                   # 📝 Latest checkpoint
-│   ├── results.png                   # 📈 Training curves
-│   ├── confusion_matrix.png          # 🎯 Performance matrix
-│   └── ...
-├── yolov11n_eval/                    # ✅ Evaluation results
-│   ├── confusion_matrix.png
-│   ├── results.csv
-│   └── ...
-└── yolov11n_inference/               # 🔮 Inference results
-```
-
-## Acknowledgments
-
-- **[Ultralytics](https://ultralytics.com/)**: For the YOLOv11 implementation  
-- **[Roboflow](https://roboflow.com/)**: For dataset management and export tools
-
----
-
-🌱 **Happy farming with AI!** 🤖🍇
+- `output_model/camera_{cam_id}/<run_name>/...`

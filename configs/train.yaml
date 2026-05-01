@@ -1,0 +1,19 @@
+﻿# Default runtime config
+cam_id: 1
+epochs: 5
+batch_size: 8
+image_size: 1280
+
+# training_mode: finetune | scratch
+training_mode: finetune
+
+# Used when training_mode=finetune
+finetune_model: pre_trained_model/general/yolo11n.pt
+
+# Used when training_mode=scratch
+scratch_model: yolo11n.yaml
+
+run_name: yolov11n_finetune
+device: ""
+datasets_config: configs/datasets.yaml
+output_model_dir: output_model
