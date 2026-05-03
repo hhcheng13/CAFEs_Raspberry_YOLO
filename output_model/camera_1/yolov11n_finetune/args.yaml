@@ -5,7 +5,7 @@ data: C:\Users\cheng\Documents\GitHub\CAFEs_Raspberry_YOLO\training\yolov11n_con
 epochs: 1
 time: null
 patience: 100
-batch: 4
+batch: 2
 imgsz: 320
 save: true
 save_period: -1
@@ -85,8 +85,8 @@ kobj: 1.0
 label_smoothing: 0.0
 nbs: 64
 hsv_h: 0.015
-hsv_s: 0.7
-hsv_v: 0.4
+hsv_s: 0.25
+hsv_v: 0.25
 degrees: 0.0
 translate: 0.1
 scale: 0.5
@@ -95,13 +95,13 @@ perspective: 0.0
 flipud: 0.0
 fliplr: 0.5
 bgr: 0.0
-mosaic: 1.0
+mosaic: 0.0
 mixup: 0.0
 copy_paste: 0.0
 copy_paste_mode: flip
 auto_augment: randaugment
 erasing: 0.4
-crop_fraction: 1.0
+crop_fraction: 0.9
 cfg: null
 tracker: botsort.yaml
 save_dir: C:\Users\cheng\Documents\GitHub\CAFEs_Raspberry_YOLO\output_model\camera_1\yolov11n_finetune

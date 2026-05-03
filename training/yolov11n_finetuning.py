@@ -153,6 +153,7 @@ def main() -> None:
     run_name = str(train_cfg.get("run_name", "yolov11n_train"))
     device = args.device if args.device is not None else str(train_cfg.get("device", ""))
     output_model_dir = str(train_cfg.get("output_model_dir", "output_model"))
+    aug_cfg = train_cfg.get("augmentation", {}) if isinstance(train_cfg.get("augmentation", {}), dict) else {}
 
     dataset = resolve_dataset(datasets_cfg, cam_id, repo_root)
     if not dataset["dataset_root"].exists():
@@ -191,8 +192,28 @@ def main() -> None:
     print(f"  image_size:     {image_size}")
     print(f"  device:         {device or 'default'}")
     print(f"  output_model:   {run_root}")
+    print(f"  augmentation:   {'enabled' if aug_cfg.get('enabled', False) else 'disabled'}")
 
     device_part = f" device={device}" if device else ""
+    aug_part = ""
+    if aug_cfg.get("enabled", False):
+        saturation = float(aug_cfg.get("saturation", 0.25))
+        brightness = float(aug_cfg.get("brightness", 0.15))
+        exposure = float(aug_cfg.get("exposure", 0.10))
+        crop_fraction = float(aug_cfg.get("crop_fraction", 0.9))
+        random_crops_only = bool(aug_cfg.get("random_crops_only", True))
+
+        # Ultralytics in this project supports hsv_s/hsv_v/crop_fraction directly.
+        hsv_s = max(0.0, saturation)
+        hsv_v = max(0.0, brightness + exposure)
+        aug_part = f" hsv_s={hsv_s} hsv_v={hsv_v} crop_fraction={crop_fraction}"
+        if random_crops_only:
+            aug_part += " mosaic=0.0 mixup=0.0 copy_paste=0.0"
+
+        blur = aug_cfg.get("blur", None)
+        noise = aug_cfg.get("noise", None)
+        if blur is not None or noise is not None:
+            print("  note: blur/noise are recorded in config but not directly passed by this Ultralytics CLI version.")
 
     model_mode = "fine-tuning" if training_mode == "finetune" else "from-scratch training"
     print("\n" + "=" * 50)
@@ -201,7 +222,7 @@ def main() -> None:
     train_command = (
         f"yolo task=detect mode=train model=\"{model_arg}\" imgsz={image_size} "
         f"epochs={epochs} batch={batch_size} data=\"{temp_data_yaml}\" "
-        f"project=\"{run_root}\" name=\"{run_name}\" exist_ok=True{device_part}"
+        f"project=\"{run_root}\" name=\"{run_name}\" exist_ok=True{aug_part}{device_part}"
     )
     run_yolo_command(train_command, f"Training YOLOv11n (Camera {cam_id})")
 

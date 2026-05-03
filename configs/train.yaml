@@ -1,8 +1,8 @@
-﻿# Default runtime config
+# Default runtime config
 cam_id: 1
-epochs: 5
+epochs: 200
 batch_size: 8
-image_size: 1280
+image_size: 640
 
 # training_mode: finetune | scratch
 training_mode: finetune
@@ -17,3 +17,15 @@ run_name: yolov11n_finetune
 device: ""
 datasets_config: configs/datasets.yaml
 output_model_dir: output_model
+
+# Augmentation settings (training)
+# Note: current Ultralytics CLI directly supports hsv/crop controls.
+augmentation:
+  enabled: true
+  saturation: 0.25      # +/-25%  -> mapped to hsv_s
+  brightness: 0.15      # +/-15%  -> contributes to hsv_v
+  exposure: 0.10        # +/-10%  -> contributes to hsv_v
+  blur: 2.5             # stored for reference (not directly supported by this CLI version)
+  noise: 0.001          # 0-0.1%  -> stored for reference (not directly supported by this CLI version)
+  random_crops_only: true
+  crop_fraction: 0.9
